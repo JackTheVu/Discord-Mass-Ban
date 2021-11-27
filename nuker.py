@@ -51,7 +51,7 @@ class Nuker:
             return(threading.Thread(target=self.Send_Request, args=(user, )).start())
 
 
-    def start_workers(self):
+    def Start_Workers(self):
 
         print("-> Starting all workers.")
         
@@ -64,4 +64,4 @@ class Nuker:
         print("-> Workers finished."); time.sleep(3); os._exit(0)
 
 
-if __name__ == "__main__":  Nuker().start_workers()
+if __name__ == "__main__":  Nuker().Start_Workers()
