@@ -1,2 +1,3 @@
-# Discord-Mass-Ban
-A fast discord mass ban nuker.
+```
+> __About:__ A simple fast mass ban for testing.
+```
