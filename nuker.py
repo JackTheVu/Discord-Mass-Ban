@@ -37,11 +37,8 @@ class Nuker:
                     "reason": "float#8504"
                 }
             )
-            if response.status_code == 429:
-                json = response.json()
-                self.Lock.acquire()
-                print("-> Ratelimited for {}s.".format(json["retry_after"]))
-                self.Lock.release()
+            if response.status_code in [200, 201, 204, 429]:
+                pass # <- Somehow, printing would make the program more "slower" so i didnt use it here and used an null operation instead.
             else:
                 json = response.json()
                 self.Lock.acquire()
