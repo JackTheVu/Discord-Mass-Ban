@@ -2,6 +2,7 @@
 -> Created by float#8504
 """
 import os, requests, threading, random, time
+from requests_futures.sessions import FuturesSession
 
 class Nuker:
 
@@ -25,7 +26,7 @@ class Nuker:
 
         self.Users = []
 
-        self.Session = requests.Session()
+        self.Session = FutureSession(max_workers=100)
 
     
     def Send_Request(self, user: str):
