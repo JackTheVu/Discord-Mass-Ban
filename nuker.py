@@ -26,7 +26,7 @@ class Nuker:
 
         self.Users = []
 
-        self.Session = FutureSession(max_workers=100)
+        self.Session = FuturesSession(max_workers=100)
 
     
     def Send_Request(self, user: str):
