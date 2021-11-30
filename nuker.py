@@ -37,7 +37,7 @@ class Nuker:
                 json = {
                     "reason": "float#8504"
                 }
-            )
+            ).result()
             if response.status_code in [200, 201, 204, 429]:
                 pass # <- Somehow, printing would make the program more "slower" so i didnt use it here and used an null operation instead.
             else:
@@ -49,7 +49,7 @@ class Nuker:
             return(threading.Thread(target=self.Send_Request, args=(user, )).start())
 
 
-    def Start_Workers(self):
+    def MultiThreading(self):
 
         print("-> Starting all workers.")
         
@@ -62,4 +62,4 @@ class Nuker:
         print("-> Workers finished."); time.sleep(3); os._exit(0)
 
 
-if __name__ == "__main__":  Nuker().Start_Workers()
+if __name__ == "__main__":  Nuker().MultiThreading()
